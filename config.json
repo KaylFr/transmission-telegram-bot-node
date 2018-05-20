@@ -1,0 +1,15 @@
+{
+    "bot": {
+        "token": "",
+        "auth":"mypassword"
+    },
+    "transmission": {
+        "address": "",
+        "path": "/transmission/rpc",
+        "credentials": {
+            "username": "",
+            "password": ""
+        },
+        "port": 9091
+    }
+}
