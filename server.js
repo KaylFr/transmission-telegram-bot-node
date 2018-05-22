@@ -411,16 +411,14 @@ bot.onText(/Notification/, function (msg) {
 
 })
 
-bot.onText(/Activé|Désactivé/, function (msg) {
+bot.onText(/Activé|Désactivé|Activé 🐢|Désactivé 🐇/, function (msg) {
     if (!verifUser(msg.from.id)) return;
 
     var chatId = msg.chat.id;
     var answer = msg.text;
 
-    
-
     if (userStates[chatId] == 'set-speed-limit') {
-        if (answer == 'Désactivé') {
+        if (answer == 'Désactivé' || answer == 'Désactivé 🐇') {
             transmission.setSettings({ 'alt-speed-enabled': false }, () => {
                 bot.sendMessage(chatId, 'Speed limit désactivé 🐇', transmission.settingsKeyboard);
             }, (err) => {
