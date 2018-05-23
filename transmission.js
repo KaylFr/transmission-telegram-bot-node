@@ -159,7 +159,9 @@ exports.getKeyboard = (type = 'all') => {
     var keyboard = [['Annuler']];
 
     exports.torrents.forEach(torrent => {
-        keyboard.push([`${torrent.id}) ${torrent.name}`]);
+        if (torrent.status == 0) keyboard.push([`⏸ ${torrent.id}) ${torrent.name}`]);
+        else if (torrent.status > 3 ) keyboard.push([`▶️ ${torrent.id}) ${torrent.name}`]);
+        else keyboard.push([`${torrent.id}) ${torrent.name}`]);
     });
     return keyboard;
 }
@@ -169,7 +171,7 @@ exports.getKeyboardActive = () => {
     var keyboard = [['Annuler']];
     exports.torrents.forEach(torrent => {
         if (torrent.status > 3)
-            keyboard.push([`${torrent.id}) ${torrent.name}`]);
+            keyboard.push([`▶️ ${torrent.id}) ${torrent.name}`]);
     });
     return keyboard;
 }

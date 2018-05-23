@@ -124,12 +124,16 @@ bot.onText(/\/torrentstart|▶️ Start/, function (msg) {
             keyboard: keyb
         })
     };
-
+    
     if (transmission.torrents.length == 0)
         bot.sendMessage(chatId, transmission.noTorrentsText, transmission.listOfCommandsKeyboard);
     else if (keyb.length == 1)
         bot.sendMessage(chatId, 'All torrents are in download queue', transmission.listOfCommandsKeyboard);
-    
+    else{
+        bot.sendMessage(chatId,"Quel torrent voulez vous reprendre ?", opts)
+        userStates[chatId] = 'start';
+    }
+ 
 });
 
 // Stop torrent
@@ -347,7 +351,19 @@ bot.onText(/([0-9]+)/, (msg, match) => {
         userStates[chatId] = '';
         userLimit[chatId] = match[1]
         bot.sendMessage(chatId, "La limite de la liste est maintenant de " + userLimit[chatId], transmission.settingsKeyboard);
-    }
+    }else if (userStates[chatId] == 'start') {
+        transmission.startTorrent(match[1], (details) => {
+            bot.sendMessage(chatId, 'Torrent correctement démarrer', transmission.listOfCommandsKeyboard);
+        }, (err) => {
+            bot.sendMessage(chatId, err, transmission.listOfCommandsKeyboard);
+        });
+    } else if (userStates[chatId] == 'stop') {
+        transmission.pauseTorrent(match[1], (details) => {
+            bot.sendMessage(chatId, 'Torrent mis en pause', transmission.listOfCommandsKeyboard);
+        }, (err) => {
+            bot.sendMessage(chatId, err, transmission.listOfCommandsKeyboard);
+        });
+    } 
 });
 
 // Cancel Operation
@@ -411,7 +427,7 @@ bot.onText(/Notification/, function (msg) {
 
 })
 
-bot.onText(/Activé|Désactivé|Activé 🐢|Désactivé 🐇/, function (msg) {
+bot.onText(/Activé|Désactivé|Activé 🐢|Désactivé 🐇|Activé 🔔|Désactivé 🔕/, function (msg) {
     if (!verifUser(msg.from.id)) return;
 
     var chatId = msg.chat.id;
@@ -433,7 +449,7 @@ bot.onText(/Activé|Désactivé|Activé 🐢|Désactivé 🐇/, function (msg) {
             });
         }
     } else if (userStates[chatId] == 'set-notification') {
-        if (answer == 'Désactivé') {
+        if (answer == 'Désactivé' || answer == "Désactivé 🔕") {
             userAdmin[chatId].notification = false
             bot.sendMessage(chatId, 'Notification Dé-Activé 🔕', transmission.settingsKeyboard);
             UserManager.saveFile(userAdmin);
